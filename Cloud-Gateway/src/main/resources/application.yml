@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: GATEWAY-SERVICE
+  config:
+    import: "configserver:http://localhost:9096"
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/order/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: orderCB
+                    fallbackUri: forward:/orderFallback
+            - id: payment-service
+              uri: lb://payment-service
+              predicates:
+                - Path=/payment/**  
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: paymentCB
+                    fallbackUri: forward:/paymentFallback  
+server:
+  port: 8989
+
+

@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: order-service
+  h2:
+    console:
+      enabled: true
+  config:
+    import: "configserver:http://localhost:9096"
+server:
+  port: 9192
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      paymentService:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 2
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+     tracing:
+       endpoint: http://localhost:9411
